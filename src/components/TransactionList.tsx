@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Transaction } from '../types/transaction';
-import { format, isSameMonth, isSameYear } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ArrowDownCircle, ArrowUpCircle, Check, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export function TransactionList({ transactions, onTogglePaid }: TransactionListP
   const [showPaid, setShowPaid] = useState(false);
   const [expandedMonths, setExpandedMonths] = useState<string[]>([format(new Date(), 'yyyy-MM')]);
 
-  // Group transactions by month
+  // Agrupar transações por mês
   const groupedTransactions = transactions.reduce<TransactionsByMonth>((groups, transaction) => {
     const monthKey = format(transaction.date, 'yyyy-MM');
     if (!groups[monthKey]) {
@@ -27,7 +27,7 @@ export function TransactionList({ transactions, onTogglePaid }: TransactionListP
     return groups;
   }, {});
 
-  // Sort months in descending order
+  // Ordenar meses do mais recente ao mais antigo
   const sortedMonths = Object.keys(groupedTransactions).sort((a, b) => b.localeCompare(a));
 
   const toggleMonth = (monthKey: string) => {
@@ -38,6 +38,7 @@ export function TransactionList({ transactions, onTogglePaid }: TransactionListP
     );
   };
 
+  // Filtrar transações pagamentos
   const filteredTransactions = (monthTransactions: Transaction[]) => {
     return monthTransactions.filter(t => showPaid || !t.paid);
   };
@@ -73,7 +74,7 @@ export function TransactionList({ transactions, onTogglePaid }: TransactionListP
           const isExpanded = expandedMonths.includes(monthKey);
           const filtered = filteredTransactions(monthTransactions);
           const monthTotal = calculateMonthTotal(monthTransactions);
-          const monthName = format(new Date(monthKey), 'MMMM yyyy', { locale: ptBR });
+          const monthName = format(new Date(Number(monthKey.split('-')[0]), Number(monthKey.split('-')[1]) - 1), 'MMMM yyyy', { locale: ptBR });
 
           if (filtered.length === 0 && !showPaid) return null;
 
@@ -81,7 +82,9 @@ export function TransactionList({ transactions, onTogglePaid }: TransactionListP
             <div key={monthKey} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               <button
                 onClick={() => toggleMonth(monthKey)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between 
+                  text-left hover:bg-gray-700 dark:hover:bg-gray-750 transition-colors
+                  border-b border-purple-500 dark:border-pink-700"
               >
                 <div>
                   <h3 className="text-lg font-medium capitalize text-gray-900 dark:text-white">

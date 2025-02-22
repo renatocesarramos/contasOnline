@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Wallet, TrendingUp, TrendingDown, PieChart, Plus } from 'lucide-react';
 import { DashboardCard } from './components/DashboardCard';
 import { TransactionList } from './components/TransactionList';
@@ -69,12 +69,13 @@ function App() {
 
   // Calculate totals
   const totalIncome = transactions
-    .filter((t) => t.type === 'income')
+    .filter((t) => t.type === 'income' && t.date.getMonth() === new Date().getMonth())
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpenses = transactions
-    .filter((t) => t.type === 'expense')
+    .filter((t) => t.type === 'expense' && t.date.getMonth() === new Date().getMonth())
     .reduce((sum, t) => sum + t.amount, 0);
+
 
   const balance = totalIncome - totalExpenses;
   const savingsPercentage = totalIncome > 0 
